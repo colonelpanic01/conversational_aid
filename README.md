@@ -6,7 +6,7 @@
 - uvicorn main:app --reload
 
 **2. Setup and run frontend (straight up react)**
-- cd frontend
+- cd ar_frontend
 - npm install
 - npm start
 
