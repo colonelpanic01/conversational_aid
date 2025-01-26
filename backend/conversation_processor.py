@@ -16,6 +16,7 @@ class ConversationTracker:
         
         self.transcripts[speaker].append(transcription)
 
+    # FOR TESTING REMOVE LATER, OR ADD TO CACHE IN THE DYNAMO DB
     def save_conversation(self):
         os.makedirs('conversations', exist_ok=True)
         
