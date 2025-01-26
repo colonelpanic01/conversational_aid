@@ -1,0 +1,10 @@
+* Inquires about Alex's well-being.
+* Asks about Emma's progress (the primary focus).
+* Expresses hope for Emma's project success.
+* Asks about Rohan's activities.
+* Notes Rohan's busy schedule.
+* Mentions personal travel plans (distraction from main topic).
+* Briefly discusses a potential travel destination.
+* Acknowledges Alex's new friendship (briefly).
+* Concludes the conversation due to work commitments.
+* Ends the conversation with a farewell.

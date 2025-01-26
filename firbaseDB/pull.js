@@ -1,6 +1,6 @@
 const fs = require('fs'); // Import the 'fs' module for file system operations
 const admin = require('firebase-admin');
-const serviceAccount = require('./mchacks-f5af9-firebase-adminsdk-fbsvc-77529dbc73.json'); // Assuming the file is in the same directory
+const serviceAccount = require('./mchacks-f5af9-firebase-adminsdk-fbsvc-1c6cd39f04.json'); // Assuming the file is in the same directory
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

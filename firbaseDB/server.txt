@@ -1,3 +1,24 @@
-alex: hbhjbhbhba
-emma:  
-rohan:  
+alex: * Reunited with Alex after a long absence.
+* Both inquired about each other's well-being.
+* Alex is busy with work but managing well.
+* Discussion about Emma's progress on a project.
+* Update on Rohan's busy life, including travels.
+* Speaker expresses envy of Rohan's travel opportunities.
+* Speaker plans a trip to a specific location next year.
+* Shared positive sentiment about the planned travel destination.
+* Alex mentions a new friend and their positive relationship.
+* Conversation concludes due to work commitments.
+
+emma: This conversation doesn't contain information about Emma.  There is no information to summarize about Emma in bullet points.
+
+rohan: * Rohan has been busy.
+* Rohan has been traveling a lot.
+* The speaker is a little jealous of Rohan's travels.
+* The speaker hasn't seen Rohan in a while.
+* The speaker hasn't traveled much lately.
+* The speaker is considering a trip to [place].  
+* The speaker's information about Rohan is limited to his busy travel schedule.
+* No details are provided about Rohan's travel destinations or activities.
+* The conversation does not reveal any specific information about Rohan's work or personal life beyond his travel.
+*  The speaker's knowledge of Rohan comes from secondhand accounts, not direct interaction.
+

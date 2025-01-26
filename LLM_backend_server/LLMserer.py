@@ -79,12 +79,12 @@ while(True):
     my_dict[speakerName] = gemaniRescue.makeUpdateSumamry(memory, my_dict[speakerName], speakerName)
 
 my_dict[speakerName] = gemaniRescue.makeHistoricSumamry(histroy, memory)
-create_or_overwrite_file(f"{speakerName}.txt", my_dict[speakerName])
+create_or_overwrite_file(f"./LLM_backend_server/ContactData/{speakerName}.txt", my_dict[speakerName])
 
 for key in my_dict:
     if key != speakerName:
         my_dict[key] = gemaniRescue.makeCurrentSumamry(memory, key)
         if my_dict[key] is not None and "\n" not in key:
             print(f"{key} = {my_dict[key]}")
-            create_or_overwrite_file(f"{key}.txt", my_dict[key])
+            create_or_overwrite_file(f"./LLM_backend_server/ContactData/{key}.txt", my_dict[key])
     

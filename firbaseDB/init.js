@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./mchacks-f5af9-firebase-adminsdk-fbsvc-77529dbc73.json')
+const serviceAccount = require('./mchacks-f5af9-firebase-adminsdk-fbsvc-1c6cd39f04.json')
 // Initialize Firebase Admin SDK with the provided database URL
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

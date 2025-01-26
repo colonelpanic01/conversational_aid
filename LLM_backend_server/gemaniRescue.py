@@ -41,6 +41,6 @@ def makeUpdateSumamry(prompt, context, speakerName):
   return response.text
   
 def makeHistoricSumamry(histroy, new): 
-  prompt = "Summaries this in 10 bullet points: " + histroy + new
+  prompt = "Summaries this in 10 bullet points and only give bullet points: " + histroy + new
   response = model.generate_content(prompt)
   return response.text
