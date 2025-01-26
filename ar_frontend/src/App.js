@@ -9,6 +9,7 @@ function App() {
 
   useEffect(() => {
     let socket = null;
+    let mediaRecorder;
 
     const connectWebSocket = () => {
       socket = new WebSocket('ws://localhost:8000/ws');
@@ -17,6 +18,24 @@ function App() {
         console.log('WebSocket Connected');
         setIsConnected(true);
         setTranscript('WebSocket connected. Requesting microphone access and waiting for audio...');
+        
+        // Request microphone access and stream audio
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.ondataavailable = (event) => {
+              if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
+                socket.send(event.data);
+              }
+            };
+            
+            mediaRecorder.start(1000); // Send chunk every second
+          })
+          .catch(error => {
+            console.error('Microphone access error:', error);
+            setTranscript('Microphone access denied');
+          });
       };
 
       socket.onmessage = (event) => {
@@ -28,10 +47,13 @@ function App() {
           if (data.status === 'connected') {
             setIsConnected(true);
           }
+          setTranscript(data.transcription?.text || 'No transcript');
+          setSummary(data.summary || 'No summary');
+          setSpeaker(data.speaker || 'Unknown Speaker');
           
-          if (data.transcription) {
-            setTranscript(data.transcription?.text || 'No transcript');
-          }
+          // if (data.transcription) {
+          //   setTranscript(data.transcription?.text || 'No transcript');
+          // }
         } catch (error) {
           console.error('WebSocket message parsing error:', error);
         }
@@ -46,7 +68,7 @@ function App() {
       socket.onclose = (event) => {
         console.log('WebSocket closed:', event);
         setIsConnected(false);
-        // Attempt to reconnect
+        // Attempt to reconnect after 3 seconds
         setTimeout(connectWebSocket, 3000);
       };
     };
