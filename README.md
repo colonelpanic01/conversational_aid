@@ -4,6 +4,9 @@
 - cd backend
 - pip install -r requirements.txt
 - uvicorn main:app --reload
+or
+- uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 16777216  # 16 MB
+
 
 **2. Setup and run frontend (straight up react)**
 - cd ar_frontend

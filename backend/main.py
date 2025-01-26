@@ -40,9 +40,11 @@ async def websocket_endpoint(websocket: WebSocket):
             await asyncio.sleep(5)  # Send heartbeat every 5 seconds
 
             data = await websocket.receive_bytes()
+            print(f"Received audio chunk: {len(data)} bytes")
             
             # Process audio chunk
             transcription = audio_processor.process_audio_chunk(data)
+            print(f"Transcription: {transcription}")
             
             if transcription:
                 # Identify speaker and track conversation
