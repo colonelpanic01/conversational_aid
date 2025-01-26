@@ -5,57 +5,67 @@ function App() {
   const [transcript, setTranscript] = useState('Waiting for conversation...');
   const [summary, setSummary] = useState('No summary yet');
   const [speaker, setSpeaker] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8000/ws');
+    let socket = null;
 
-    socket.onopen = () => {
-      console.log('WebSocket Connected');
-      
-      // Request microphone access and stream audio
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-          const audioContext = new AudioContext();
-          const mediaRecorder = new MediaRecorder(stream);
+    const connectWebSocket = () => {
+      socket = new WebSocket('ws://localhost:8000/ws');
+
+      socket.onopen = () => {
+        console.log('WebSocket Connected');
+        setIsConnected(true);
+        setTranscript('WebSocket connected. Requesting microphone access and waiting for audio...');
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Received WebSocket message:', data);
           
-          mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-              socket.send(event.data);
-            }
-          };
+          // Handle different message types
+          if (data.status === 'connected') {
+            setIsConnected(true);
+          }
           
-          mediaRecorder.start(1000); // Send chunk every second
-        })
-        .catch(error => {
-          console.error('Microphone access error:', error);
-          setTranscript('Microphone access denied');
-        });
+          if (data.transcription) {
+            setTranscript(data.transcription?.text || 'No transcript');
+          }
+        } catch (error) {
+          console.error('WebSocket message parsing error:', error);
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+        setIsConnected(false);
+        setTranscript('WebSocket connection error');
+      };
+
+      socket.onclose = (event) => {
+        console.log('WebSocket closed:', event);
+        setIsConnected(false);
+        // Attempt to reconnect
+        setTimeout(connectWebSocket, 3000);
+      };
     };
 
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        setTranscript(data.transcription?.text || 'No transcript');
-        setSummary(data.summary || 'No summary');
-        setSpeaker(data.speaker || 'Unknown Speaker');
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    };
+    connectWebSocket();
 
-    socket.onerror = (error) => {
-      console.error('WebSocket Error:', error);
-      setTranscript('WebSocket connection error');
+    return () => {
+      if (socket) socket.close();
     };
-
-    return () => socket.close();
   }, []);
 
   return (
     <div className="App">
       <div className="conversation-container">
+        <div className="connection-status">
+          Connection Status: {isConnected ? 'Connected ✅' : 'Disconnected ❌'}
+        </div>
         <div className="speaker-info">
-          <h2>{speaker}</h2>
+          <h2>{speaker || 'No Speaker'}</h2>
         </div>
         <div className="transcript-area">
           <h3>Transcript</h3>
