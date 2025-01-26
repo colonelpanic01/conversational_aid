@@ -1,0 +1,20 @@
+You: Hey Alex, long time no see! How have you been?
+Person2: Hey, good to hear from you too! I've been doing well, thanks for asking. How about you?
+You: I'm doing good as well. I've been busy with work, but I'm managing. How's Emma doing? I haven't seen him in a while.
+Person2: Emma's doing great! He's been working on a new project that he's really excited about. He's been spending a lot of time in the lab, but he seems to be enjoying it.
+You: That's great to hear! I'm sure he'll do great things with his project. How about Rohan? I haven't seen him in a while either.
+Person2: Rohan's doing well too. He's been traveling a lot lately. He just got back from a trip to [place], and he's planning another trip to [place] next month.
+You: Wow, he's been busy! I'm a little jealous. I haven't been able to travel much lately.
+Person2: You should try to take a trip soon. It's a great way to relax and clear your head.
+You: I know, I need to. I've been thinking about taking a trip to [place] next year.
+Person2: That sounds like a great place to visit. I've never been there myself, but I've heard it's beautiful.
+You: It is. I've been there before, and I loved it. I can't wait to go back.
+Person2: Well, I'm glad you're looking forward to it. In the meantime, I have to tell you about my new friend, Amria. She's amazing! We met at a party a few weeks ago, and we've been hanging out ever since. She's so much fun to be around.
+You: That's great to hear! I'm glad you've found a new friend. I'm sure you guys have a lot of fun together.
+Person2: We do. We've been going out to eat, seeing movies, and just hanging out and talking. She's a really great listener, and she always has something interesting to say.
+You: That sounds like a great friend to have. I'm sure you guys will be friends for a long time.
+Person2: I hope so. I'm really glad I met her.
+You: Well, I'm glad you're happy. I'm going to go now. I have to get to work.
+Person2: Okay, I'll talk to you later.
+You: Bye.
+Person2: Bye.
