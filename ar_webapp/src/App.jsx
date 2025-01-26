@@ -3,15 +3,41 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import { Canvas } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { io } from 'socket.io-client';
 
 const App = () => {
   const videoRef = useRef(null);
-  const audioRef = useRef(null);
   const [faces, setFaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFaceIndex, setActiveFaceIndex] = useState(null);
-  const { transcript, resetTranscript } = useSpeechRecognition();
+  const [summary, setSummary] = useState('');
+  const [transcription, setTranscription] = useState('');
+  const socketRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    // Improved socket connection with CORS configuration
+    socketRef.current = io('http://localhost:5000', {
+      withCredentials: true,
+      extraHeaders: {
+        "my-custom-header": "abcd"
+      }
+    });
+
+    // Handle updates from the backend
+    socketRef.current.on('update_transcription', (data) => {
+      setTranscription(data.transcription);
+    });
+
+    socketRef.current.on('update_summary', (data) => {
+      setSummary(data.summary);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
 
   // Load face-api.js models
   useEffect(() => {
@@ -36,19 +62,35 @@ const App = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         console.log('Streams started');
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
         }
-        if (audioRef.current) {
-          audioRef.current.srcObject = stream;
-        }
+
+        // Set up MediaRecorder for audio
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+
+        // Send audio chunks to the backend
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0 && socketRef.current) {
+            socketRef.current.emit('audio_chunk', event.data);
+          }
+        };
+
+        mediaRecorder.start(1000); // Send audio chunks every second
       } catch (err) {
         console.error('Error starting streams:', err);
       }
     };
 
     startStreams();
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+    };
   }, []);
 
   // Detect faces
@@ -92,20 +134,6 @@ const App = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Start speech recognition with filtering
-  useEffect(() => {
-    const startSpeechRecognition = async () => {
-      if (activeFaceIndex !== null) {
-        console.log('Speech recognition started for active face');
-        SpeechRecognition.startListening({ continuous: true });
-      } else {
-        //SpeechRecognition.stopListening();
-      }
-    };
-
-    startSpeechRecognition();
-  }, [activeFaceIndex]);
-
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       {/* Video feed */}
@@ -118,9 +146,6 @@ const App = () => {
           objectFit: 'cover',
         }}
       />
-
-      {/* Audio stream */}
-      <audio ref={audioRef} style={{ display: 'none' }} />
 
       {/* 3D Canvas for AR */}
       <Canvas style={{ position: 'absolute', width: '100%', height: '100%' }}>
@@ -137,7 +162,7 @@ const App = () => {
         ))}
       </Canvas>
 
-      {/* Speech transcript */}
+      {/* Live Transcription */}
       <div
         className="transcript"
         style={{
@@ -148,12 +173,9 @@ const App = () => {
         }}
       >
         <h3>Live Transcript:</h3>
-        {activeFaceIndex !== null ? (
-          <p>{transcript}</p>
-        ) : (
-          <p>Waiting for a person to focus...</p>
-        )}
-        <button onClick={resetTranscript}>Reset</button>
+        <p>{transcription || 'Waiting for transcription...'}</p>
+        <h3>Summary:</h3>
+        <p>{summary || 'No summary yet...'}</p>
       </div>
     </div>
   );
