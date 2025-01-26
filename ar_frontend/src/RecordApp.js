@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { convertAudioToPCM } from './utils/audioConversion';
 import './App.css';
 
-function App() {
+function RecordApp() {
   const [transcript, setTranscript] = useState('Waiting for conversation...');
   const [summary, setSummary] = useState('No summary yet');
   const [speaker, setSpeaker] = useState('');
@@ -24,13 +25,32 @@ function App() {
           .then(stream => {
             mediaRecorder = new MediaRecorder(stream);
             
-            mediaRecorder.ondataavailable = (event) => {
-              if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-                socket.send(event.data);
+            // // log when the recorder starts
+            // mediaRecorder.onstart = () => {
+            //   console.log("MediaRecorder started");
+            // };
+            // // log when recorder stops
+            // mediaRecorder.onstop = () => {
+            //   console.log("MediaRecorder stopped");
+            // };
+
+            mediaRecorder.ondataavailable = async (event) => {
+              if (event.data.size > 0) {
+                try {
+                  const pcmData = await convertAudioToPCM(event.data);
+                  
+                  if (pcmData && socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(pcmData);
+                    console.log("Audio chunk sent to WebSocket");
+                  }
+                } catch (error) {
+                  console.error('Audio conversion error:', error);
+                }
               }
             };
-            
-            mediaRecorder.start(1000); // Send chunk every second
+                        
+            mediaRecorder.start(5000); // Send chunk every second
+            console.log("MediaRecorder started recording");
           })
           .catch(error => {
             console.error('Microphone access error:', error);
@@ -51,9 +71,10 @@ function App() {
           setSummary(data.summary || 'No summary');
           setSpeaker(data.speaker || 'Unknown Speaker');
           
-          // if (data.transcription) {
-          //   setTranscript(data.transcription?.text || 'No transcript');
-          // }
+          if (data.transcription) {
+            console.log('recieving transcript');
+            //setTranscript(data.transcription?.text || 'No transcript');
+          }
         } catch (error) {
           console.error('WebSocket message parsing error:', error);
         }
@@ -69,7 +90,10 @@ function App() {
         console.log('WebSocket closed:', event);
         setIsConnected(false);
         // Attempt to reconnect after 3 seconds
-        setTimeout(connectWebSocket, 3000);
+        // setTimeout(connectWebSocket, 3000);
+        setTimeout(() => {
+          connectWebSocket();
+        }, 3000);
       };
     };
 
@@ -102,4 +126,4 @@ function App() {
   );
 }
 
-export default App;
+export default RecordApp;
