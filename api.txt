@@ -1,3 +1,0 @@
-Gemin_Key=AIzaSyBr_1dAIWMm5TTuWIdl24zQmHqw3YPxRR0
-AccessKeyID=AKIAVIOZGBBCA6KP627T
-SecretAccessKey=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
