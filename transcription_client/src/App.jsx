@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { Badge } from "./components/ui/badge";
-import { Mic, Wifi } from "lucide-react";
 import { setupAudioStream } from './utils/audioUtils';
+import './App.css';
 
 const App = () => {
   const [connectionStatus, setConnectionStatus] = useState({
@@ -25,55 +23,22 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Status Bar */}
-        <div className="flex justify-between items-center bg-white rounded-lg p-4 shadow-sm">
-          <div className="space-x-4">
-            <Badge variant={connectionStatus.websocket ? "success" : "destructive"} className="flex items-center gap-2">
-              <Wifi className="h-4 w-4" />
-              {connectionStatus.websocket ? 'Connected' : 'Disconnected'}
-            </Badge>
-            <Badge variant={connectionStatus.microphone ? "success" : "destructive"} className="flex items-center gap-2">
-              <Mic className="h-4 w-4" />
-              {connectionStatus.microphone ? 'Active' : 'Inactive'}
-            </Badge>
-          </div>
+    <div className="App">
+      <div className="conversation-container">
+        <div className="connection-status">
+          Connection Status: {connectionStatus.websocket ? 'Connected ✅' : 'Disconnected ❌'}
         </div>
-
-        {/* Speaker Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">Current Speaker</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold text-blue-600">{transcriptionData.speaker}</p>
-          </CardContent>
-        </Card>
-
-        {/* Transcript Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">Live Transcript</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] whitespace-pre-wrap">
-              {transcriptionData.transcript}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Summary Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">Conversation Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-50 rounded-lg p-4">
-              {transcriptionData.summary}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="speaker-info">
+          <h2>{transcriptionData.speaker || 'No Speaker'}</h2>
+        </div>
+        <div className="transcript-area">
+          <h3>Transcript</h3>
+          <p>{transcriptionData.transcript}</p>
+        </div>
+        <div className="summary-area">
+          <h3>Conversation Summary</h3>
+          <p>{transcriptionData.summary}</p>
+        </div>
       </div>
     </div>
   );
