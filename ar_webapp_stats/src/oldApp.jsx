@@ -5,14 +5,14 @@ import { Canvas } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
-const DetailsAR = () => {
+const App = () => {
   const videoRef = useRef(null);
-  const audioRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   
   const [faces, setFaces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [speakerName, setSpeakerName] = useState(null);
   const [activeFaceIndex, setActiveFaceIndex] = useState(null);
   const [debugInfo, setDebugInfo] = useState({});
   
@@ -89,7 +89,7 @@ const DetailsAR = () => {
     startVideoStream();
   }, []);
 
-  // Comprehensive speech detection
+  // speech detection
   useEffect(() => {
     const detectSpeech = async () => {
       if (!loading && videoRef.current) {
@@ -204,7 +204,7 @@ const DetailsAR = () => {
           // No faces detected
           setActiveFaceIndex(null);
           SpeechRecognition.stopListening();
-          resetTranscript();
+          // resetTranscript();
         }
       }
     };
@@ -212,6 +212,20 @@ const DetailsAR = () => {
     const interval = setInterval(detectSpeech, 200);
     return () => clearInterval(interval);
   }, [loading, detectionParams]);
+
+    // // Detect "my name is" and fetch LinkedIn data
+    // useEffect(() => {
+    //   const matchNamePattern = /my name is (.+?)(\.|$)/i;
+    //   const match = transcript.match(matchNamePattern);
+    //   if (match) {
+    //     const name = match[1].trim();
+    //     console.log(`Detected name: ${name}`);
+    //     setSpeakerName(name);
+    //     resetTranscript();
+    //   }
+    // }, [transcript]);
+  
+  
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -233,10 +247,11 @@ const DetailsAR = () => {
             key={face.id}
             position={[face.x / 100 - 2, face.y / 100 + 2, 0]}
             color={index === activeFaceIndex ? 'lime' : 'white'}
-            fontSize={0.1}
-            maxWidth={2}
+            fontSize={0.2}
+            maxWidth={3}
           >
-            {`Person ${index + 1}${index === activeFaceIndex ? ' (Active)' : ''}`}
+            {`Person ${index + 1}${index === activeFaceIndex ? ' (Active) \n' : ''}`}
+            {speakerName}
           </Text>
         ))}
       </Canvas>
@@ -259,6 +274,26 @@ const DetailsAR = () => {
         <h3>Debug Info:</h3>
         <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
       </div>
+
+      {/* speaker name
+      <div
+        style={{
+          position: 'absolute',
+          top: '100px',
+          right: '100px',
+          color: 'white',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          padding: '10px',
+          borderRadius: '5px',
+          maxWidth: '100px',
+          maxHeight: '100px',
+          overflow: 'auto'
+        }}
+        >
+        <h5>Speaker Name</h5>
+        {speakerName}
+      </div> */}
+
 
       {/* Speech transcript and controls */}
       <div
@@ -338,4 +373,4 @@ const DetailsAR = () => {
   );
 };
 
-export default DetailsAR;
+export default App;

@@ -15,6 +15,7 @@
     "@react-three/xr": "^6.5.3",
     "@ricky0123/vad-react": "^0.0.28",
     "axios": "^1.7.9",
+    "cohere-ai": "^7.15.4",
     "cors": "^2.8.5",
     "face-api.js": "^0.22.2",
     "p5": "^1.11.3",
