@@ -2,6 +2,7 @@
 Parse conversations in real time, providing a transcription and summarization of what the speaker in front of a camera is saying, beside them.
 
 ar_webapp_stats is a vite react project using speach recognition and face detection. It implements the Cohere API for name detection and conversation summarization and uses face-api.js for face detection and determining speaker confidence. Make sure you create your own Cohere token and add it in a .env file in the root directory.
+
 **Start AR webapp**
   - cd ar_webapp_stats
   - npm install
