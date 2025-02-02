@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import { convertAudioToPCM } from './utils/audioConversion';
+import Recorder from 'recorder-js';
 import './App.css';
 
 function RecordApp() {
@@ -8,10 +8,12 @@ function RecordApp() {
   const [speaker, setSpeaker] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-
+  let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  let recorder = null;
+  
   useEffect(() => {
     let socket = null;
-    let mediaRecorder;
+    let stream = null;
 
     const connectWebSocket = () => {
       socket = new WebSocket('ws://localhost:8000/ws');
@@ -21,61 +23,23 @@ function RecordApp() {
         setIsConnected(true);
         setTranscript('WebSocket connected. Requesting microphone access and waiting for audio...');
         
-        // Request microphone access and stream audio
         navigator.mediaDevices.getUserMedia({ audio: true })
-          .then(stream => {
-            // mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-            mediaRecorder = new MediaRecorder(stream);
-
-            mediaRecorder.ondataavailable = handleDataAvailable;
-            mediaRecorder.start(1000); // Sends audio every 1 second
-            console.log("MediaRecorder started recording");
-
-            setIsRecording(true);
-            // // Prepare to send audio chunks every 5 seconds
-            // mediaRecorder.ondataavailable = (event) => {
-            //   if (event.data.size > 0) {
-            //     try {
-            //       // Send the audio chunk to WebSocket every time data is available
-            //       socket.send(event.data);
-            //       console.log("Audio chunk sent to WebSocket");
-
-            //       // Optionally, convert audio to PCM (if needed)
-            //       // const pcmData = await convertAudioToPCM(event.data);
-            //       // if (pcmData && socket.readyState === WebSocket.OPEN) {
-            //       //   socket.send(pcmData);
-            //       //   console.log("PCM Audio chunk sent to WebSocket");
-            //       // }
-            //     } catch (error) {
-            //       console.error('Error sending audio chunk:', error);
-            //     }
-            //   }
-            // };
-            // setIsRecording(true);
+          .then(userStream => {
+            stream = userStream;
+            recorder = new Recorder(audioContext);
+            recorder.init(stream);
+            startRecording(socket);
           })
           .catch(error => {
             console.error('Microphone access error:', error);
             setTranscript('Microphone access denied');
           });
       };
-      async function handleDataAvailable(event) {
-        if(event.data && event.data.size > 0) {
-            let blobBuffer = new Blob([event.data],{type:'video/webm'})
-            let rawbuffer = await blobBuffer.arrayBuffer()
-            let buffer = new Uint8Array(rawbuffer)
-            socket.postMessage(buffer)
-        }
-      }
 
       socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           console.log('Received WebSocket message:', data);
-          
-          // Handle different message types
-          if (data.status === 'connected') {
-            setIsConnected(true);
-          }
           setTranscript(data.transcription?.text || 'No transcript');
           setSummary(data.summary || 'No summary');
           setSpeaker(data.speaker || 'Unknown Speaker');
@@ -90,24 +54,33 @@ function RecordApp() {
         setTranscript('WebSocket connection error');
       };
 
-      socket.onclose = (event) => {
-        console.log('WebSocket closed:', event);
+      socket.onclose = () => {
+        console.log('WebSocket closed');
         setIsConnected(false);
-        // Reconnect after 3 seconds if needed
         setTimeout(connectWebSocket, 3000);
       };
     };
 
     connectWebSocket();
-
     return () => {
       if (socket) socket.close();
-      if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
-        setIsRecording(false);
-      }
+      if (stream) stream.getTracks().forEach(track => track.stop());
     };
   }, []);
+
+  const startRecording = (socket) => {
+    if (recorder) {
+      setIsRecording(true);
+      recorder.start();
+      setInterval(async () => {
+        if (!isRecording) return;
+        const { blob } = await recorder.stop();
+        recorder.start(); // Restart recording
+        socket.send(blob);
+        console.log('Audio chunk sent to WebSocket');
+      }, 5000);
+    }
+  };
 
   return (
     <div className="App">
