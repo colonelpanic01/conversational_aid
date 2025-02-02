@@ -6,8 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'; // Use named import instead of defaul
 export default defineConfig({
   server: {
     host: '0.0.0.0',  // Make it accessible from any device in your network
-    port: 5173,        // You can change this if you want to use a different port
-    port: 3000
+    port: 5173
   },
   plugins: [
     react(),

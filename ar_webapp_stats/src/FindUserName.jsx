@@ -2,16 +2,15 @@ import 'regenerator-runtime/runtime';
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import { Canvas } from '@react-three/fiber';
-import { XR } from '@react-three/xr';
 import { Text } from '@react-three/drei';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import axios from 'axios';
 
 const App = () => {
   const videoRef = useRef(null);
   const [faces, setFaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [linkedInData, setLinkedInData] = useState(null);
+  const [speakerName, setSpeakerName] = useState(null);
   const { transcript, resetTranscript } = useSpeechRecognition();
 
   // Load face-api.js models
@@ -88,22 +87,22 @@ const App = () => {
     if (match) {
       const name = match[1].trim();
       console.log(`Detected name: ${name}`);
-      fetchLinkedInProfile(name);
+      // fetchLinkedInProfile(name);
       resetTranscript();
     }
   }, [transcript]);
 
-  const fetchLinkedInProfile = async (name) => {
-    try {
-      const response = await axios.get(`/api/linkedin/search`, {
-        params: { name },
-      });
-      setLinkedInData(response.data);
-      console.log('LinkedIn data:', response.data);
-    } catch (error) {
-      console.error('Error fetching LinkedIn data:', error);
-    }
-  };
+  // const fetchLinkedInProfile = async (name) => {
+  //   try {
+  //     const response = await axios.get(`/api/linkedin/search`, {
+  //       params: { name },
+  //     });
+  //     setLinkedInData(response.data);
+  //     console.log('LinkedIn data:', response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching LinkedIn data:', error);
+  //   }
+  // };
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
