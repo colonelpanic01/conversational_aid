@@ -22,24 +22,10 @@ class AudioProcessor:
 
         self.buffer_size = sample_rate * 10  # keep last 10 seconds of audio
         self.transcriptions = {}  # dictionary to store transcriptions per speaker
-    
-    def save_audio_segment(self, audio_data, filename):
-        # function just to test the quality of the WAV files, save raw audio data as a wav in temp directory
-        filepath = os.path.join("temp", filename)
-        with wave.open(filepath, "wb") as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)  # 16-bit PCM
-            wf.setframerate(self.sample_rate)
-            wf.writeframes(audio_data.tobytes())
-        return filepath
 
     def process_audio_chunk(self, audio_data):
         audio_np = np.array(audio_data, dtype=np.int16)
         
-        # Save audio snippet
-        # filename = f"snippet_{np.random.randint(10000)}.wav"
-        # snippet_path = self.save_audio_segment(audio_np, filename)
-
         # convert to PyTorch tensor for Pyannote (normalize to -1 to 1)
         audio_tensor = torch.tensor(audio_np, dtype=torch.float32) / 32768.0
         audio_tensor = audio_tensor.unsqueeze(0)  # add batch dimension
