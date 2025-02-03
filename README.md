@@ -23,7 +23,7 @@ In the other implementation, audio_processing (flask and fastapi backend) perfor
 ## TO-DO
   - [ ] Add feature for prompt generation so the user can select a key point about the person they are talking to and get a question/ conversational "tips" about something specific speaker_2 mentioned.
   - [ ] Add feature to view historical conversations and key points. Store conversational data for each person and use facial recognition to display info from previous conversation beside them whenever you see them again.
-  - [ ] Make ESP32 AR glasses to display speaker info, and add other functionality (web search, live translation, etc.)
+  - [ ] Make Raspberry Pi Zero 2 AR glasses to display speaker info, and add other functionality (web search, live translation, etc.)
   - [ ] (Not quite sure if this is ethically sound) but if speaker permitting, use Linkedin API to search for the speaker's name as its detected and display key points from their profile beside their face. Or something like the Harvard AR glasses project where we reverse image search the speaker's face and filter based on geographic location to display online persona. It sounds super invasive and icky but I think its just something cool to build. 
   - [ ] Restructure for a more cohesive execution.
   - [ ] Fix latency issue in the flask backend (whisper transcription just takes too darn long, react speech recognition is perfect however).
